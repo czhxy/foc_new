@@ -1,4 +1,7 @@
-#include <Arduino.h> 
+#ifndef AS5600_H
+#define AS5600_H
+
+#include <Arduino.h>
 #include "Wire.h"
 
 class Sensor_AS5600
@@ -23,3 +26,5 @@ class Sensor_AS5600
     int32_t vel_full_rotations=0; //用于速度计算的先前完整旋转圈数
 TwoWire* wire;
 };
+
+#endif // AS5600_H

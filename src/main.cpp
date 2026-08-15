@@ -5,11 +5,51 @@
 //仅在DengFOC官方硬件上测试过，欢迎硬件购买/支持作者，淘宝搜索店铺：灯哥开源
 //你的支持将是接下来做视频和持续开源的经费，灯哥在这里先谢谢大家了
 
-#include "DengFOC.h"
-#include "AS5600.h"
+#include "foc.h"
 
 int Sensor_DIR=1;    //传感器方向
 int Motor_PP=7;    //电机极对数
+
+//==============串口接收（应用层）==============
+float motor_target;
+
+int commaPosition;
+String serialReceiveUserCommand() {
+
+  // a string to hold incoming data
+  static String received_chars;
+
+  String command = "";
+
+  while (Serial.available()) {
+    // get the new byte:
+    char inChar = (char)Serial.read();
+    // add it to the string buffer:
+    received_chars += inChar;
+
+    // end of user input
+    if (inChar == '\n') {
+
+      // execute the user command
+      command = received_chars;
+
+      commaPosition = command.indexOf('\n');//检测字符串中的逗号
+      if(commaPosition != -1)//如果有逗号存在就向下执行
+      {
+          motor_target = command.substring(0,commaPosition).toDouble();            //电机角度
+          Serial.println(motor_target);
+      }
+      // reset the command buffer
+      received_chars = "";
+    }
+  }
+  return command;
+}
+
+float serial_motor_target()
+{
+  return motor_target;
+}
 
 void setup() {
   Serial.begin(115200);
@@ -20,7 +60,7 @@ void setup() {
 }
 
 
-void loop() 
+void loop()
 {
 
   //设置速度环PID
